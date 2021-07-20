@@ -1,8 +1,5 @@
 """
-Uses Stable Baselines 3 to train a DDPG agent on the iGibson environment specified by the
-`turtlebot_point_nav.yaml` config file.
-
-This environment is prepackaged w/ the default gibson2 installation (ie. not part of iGibson Challenge 2021).
+Stable Baselines 3 w/ `locobot_social_nav.yaml` config file (part of iGibson Challenge 2021).
 """
 
 import os
