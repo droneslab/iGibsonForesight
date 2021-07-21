@@ -1,3 +1,12 @@
+"""
+Train on any task/scene combo from the iGibson Challenge 2021 using the Locobot robot.
+
+Default hyperparameters are used for all algorithms, other than a buffer size of 500
+ (as opposed to the default of 1_000_000) for DDPG, SAC and TD3 due to memory limitations.
+
+Reward functions and action spaces are specified by or according to iGibson.
+"""
+
 import os
 import logging
 import numpy as np
@@ -23,16 +32,17 @@ IGC2021_ENVS = (
 
 IGC2021_TASKS = ('interactive_nav', 'social_nav')
 
-ALGORITHMS = (A2C, DDPG, PPO, SAC, TD3)
+ALGORITHMS = (A2C, DDPG, PPO, SAC, TD3)  # Others are not valid due to Locobot's continuous action space
 
 
 class LocobotEnvironmentTrainer:
 
-    def __init__(self, algorithm=DDPG, environment_name='Rs_int', task='interactive_nav', training_steps=100_000, save_freq=20_000,
-                 igibson_logging_level=logging.ERROR):
+    def __init__(self, algorithm, environment_name='Rs_int', task='interactive_nav', training_steps=100_000, save_freq=20_000,
+                 igibson_logging_level=logging.ERROR, rendering_mode='headless'):
 
         assert algorithm in ALGORITHMS, 'ERROR: Invalid algorithm.'
         assert environment_name in IGC2021_ENVS, 'ERROR: Invalid environment name.'
+        assert task in IGC2021_TASKS, 'ERROR:  Invalid task selected.'
 
         logging.getLogger().setLevel(igibson_logging_level)
 
@@ -43,26 +53,37 @@ class LocobotEnvironmentTrainer:
 
         # TO DO: CREATE CONFIG FILES
         self.config_filename = os.path.join(EVAL_CONFIG_FOLDER, f'{self._robot_name}_{task}_{environment_name}.yaml')
-        self.experiment_name = f'{self._robot_name}_{environment_name}'  # tensorboard logdir
+        self.experiment_name = f'{self._robot_name}_{task}_{environment_name}'  # tensorboard logdir
 
         self.algorithm = algorithm
         self.training_steps = training_steps
         self.save_freq = save_freq
 
-        # self.train()
+        self.train(rendering_mode)
 
     def train(self, mode='headless'):
+
+        print(f'TRAINING ON CONFIG FILE: {self.config_filename}')
 
         env = get_wrapped_env(self.config_filename, self.observation_space, self.action_space, mode=mode)
 
         checkpoint_callback = CheckpointCallback(save_freq=self.save_freq, save_path='./models/', name_prefix=self.experiment_name)
         rollout_time_callback = RolloutTimeCallback(verbose=1)
 
-        model = self.algorithm('CnnPolicy', env, verbose=1, tensorboard_log=f'./logs/{self.experiment_name}')
+        tb_log = f'./logs/{self.experiment_name}'
+        if self.algorithm in [DDPG, TD3, SAC]:
+            model = self.algorithm('CnnPolicy', env, buffer_size=500, verbose=1, tensorboard_log=tb_log)
+        else:  # [A2C, PPO]
+            model = self.algorithm('CnnPolicy', env, verbose=1, tensorboard_log=tb_log)
+
         model.learn(total_timesteps=self.training_steps, callback=[checkpoint_callback, rollout_time_callback])
 
+        env.close()
 
 
 if __name__ == '__main__':
 
-    x = LocobotEnvironmentTrainer()
+    x = LocobotEnvironmentTrainer(algorithm=DDPG,
+                                  environment_name='Wainscott_1_int',
+                                  task='social_nav',
+                                  rendering_mode='gui')
