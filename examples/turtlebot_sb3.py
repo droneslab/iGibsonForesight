@@ -32,7 +32,7 @@ def main(config_filename, training_steps=100_000, save_freq=20_000):
 
     env = get_wrapped_env(config_filename, observation_space, action_space)
 
-    checkpoint_callback = CheckpointCallback(save_freq=save_freq, save_path='./models/', name_prefix=experiment_name)
+    checkpoint_callback = CheckpointCallback(save_freq=save_freq, save_path='../models/', name_prefix=experiment_name)
     rollout_time_callback = RolloutTimeCallback(verbose=1)
 
     model = DDPG("CnnPolicy", env, batch_size=16, buffer_size=600, verbose=1, tensorboard_log=f'./logs/{experiment_name}')
