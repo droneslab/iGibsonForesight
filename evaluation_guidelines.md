@@ -11,5 +11,6 @@ each of these combinations to be run with **5 popular RL algorithms**.
 |          TD3         	|                                                                               	|                 	|                   	|             	|             	|             	|               	|                 	|
 |          SAC         	|                                                                               	|                 	|                   	|             	|             	|             	|               	|                 	|
 |          PPO         	|                                                                               	|                 	|                   	|             	|             	|             	|               	|                 	|
-where Task1 = `interactive_nav`
-and Task2 = `social_nav`
+
+### where Task1 = `interactive_nav`
+### and Task2 = `social_nav`
