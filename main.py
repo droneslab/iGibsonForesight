@@ -52,7 +52,6 @@ class LocobotEnvironmentTrainer:
         self.observation_space = spaces.Box(low=0, high=255, shape=(180, 320, 3), dtype=np.uint8)
         self.action_space = spaces.Box(shape=(2,), low=-1.0, high=1.0, dtype=np.float32)
 
-        # TO DO: CREATE CONFIG FILES
         self.config_filename = os.path.join(EVAL_CONFIG_FOLDER, f'{self._robot_name}_{task}_{environment_name}.yaml')
         self.experiment_name = f'{self._robot_name}_{task}_{environment_name}'  # tensorboard logdir
 
