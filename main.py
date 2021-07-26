@@ -14,7 +14,7 @@ from gym import spaces
 from stable_baselines3 import A2C, DDPG, PPO, SAC, TD3
 from stable_baselines3.common.callbacks import CheckpointCallback
 
-from util import get_wrapped_env, RolloutTimeCallback
+from util import get_wrapped_env, RolloutTimeCallback, HardwareStatsCallback
 
 EVAL_CONFIG_FOLDER = './eval_configs'
 
@@ -37,7 +37,8 @@ ALGORITHMS = (A2C, DDPG, PPO, SAC, TD3)  # Others are not valid due to Locobot's
 
 class LocobotEnvironmentTrainer:
 
-    def __init__(self, algorithm, environment_name='Rs_int', task='interactive_nav', training_steps=100_000, save_freq=20_000,
+    def __init__(self, algorithm, environment_name='Rs_int', task='interactive_nav',
+                 training_steps=100_000, save_freq=1_000,
                  igibson_logging_level=logging.ERROR, rendering_mode='headless'):
 
         assert algorithm in ALGORITHMS, 'ERROR: Invalid algorithm.'
@@ -61,14 +62,15 @@ class LocobotEnvironmentTrainer:
 
         self.train(rendering_mode)
 
-    def train(self, mode='headless'):
+    def train(self, mode):
 
         print(f'TRAINING ON CONFIG FILE: {self.config_filename}')
 
         env = get_wrapped_env(self.config_filename, self.observation_space, self.action_space, mode=mode)
 
-        checkpoint_callback = CheckpointCallback(save_freq=self.save_freq, save_path='./models/', name_prefix=self.experiment_name)
-        rollout_time_callback = RolloutTimeCallback(verbose=1)
+        ckpt_callback = CheckpointCallback(save_freq=self.save_freq, save_path='./models/', name_prefix=self.experiment_name)
+        rt_callback = RolloutTimeCallback(verbose=1)
+        hs_callback = HardwareStatsCallback(verbose=1)
 
         tb_log = f'./logs/{self.experiment_name}'
         if self.algorithm in [DDPG, TD3, SAC]:
@@ -76,14 +78,14 @@ class LocobotEnvironmentTrainer:
         else:  # [A2C, PPO]
             model = self.algorithm('CnnPolicy', env, verbose=1, tensorboard_log=tb_log)
 
-        model.learn(total_timesteps=self.training_steps, callback=[checkpoint_callback, rollout_time_callback])
+        model.learn(total_timesteps=self.training_steps, callback=[ckpt_callback, rt_callback, hs_callback])
 
         env.close()
 
 
 if __name__ == '__main__':
 
-    x = LocobotEnvironmentTrainer(algorithm=DDPG,
-                                  environment_name='Wainscott_1_int',
+    x = LocobotEnvironmentTrainer(algorithm=A2C,
+                                  environment_name='Rs_int',
                                   task='social_nav',
-                                  rendering_mode='gui')
+                                  rendering_mode='headless')

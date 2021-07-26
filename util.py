@@ -1,6 +1,10 @@
+import os
 import sys
+import psutil
 from datetime import datetime
+import GPUtil
 import gym
+import torch
 from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.callbacks import BaseCallback
 
@@ -11,7 +15,7 @@ import logging
 
 class RolloutTimeCallback(BaseCallback):
     """
-    A custom callback that derives from ``BaseCallback``.
+    Logs rollout times (seconds) to Tensorboard.
 
     :param verbose: (int) Verbosity level 0: not output 1: info
     """
@@ -37,8 +41,8 @@ class RolloutTimeCallback(BaseCallback):
         using the current policy.
         This event is triggered before collecting new samples.
         """
-        if self.verbose == 1:
-            self.rollout_start_time = datetime.now()
+
+        self.rollout_start_time = datetime.now()
 
     def _on_step(self) -> bool:
         """
@@ -56,16 +60,67 @@ class RolloutTimeCallback(BaseCallback):
         """
         This event is triggered before updating the policy.
         """
-        if self.verbose == 1:
-            self.rollout_end_time = datetime.now()
+        self.rollout_end_time = datetime.now()
 
-            print(f'Rollout time: {self.rollout_end_time - self.rollout_start_time} seconds')
+        rollout_time = self.rollout_end_time - self.rollout_start_time
+
+        if self.verbose == 1:
+            print(f'Rollout time: {rollout_time}')
+
+        self.logger.record('rollout_time_seconds', rollout_time)
 
     def _on_training_end(self) -> None:
         """
         This event is triggered before exiting the `learn()` method.
         """
         pass
+
+
+class HardwareStatsCallback(BaseCallback):
+    """
+    Logs miscellaneous hardware statistics to Tensorboard.
+    CPU usage, RAM (memory) usage, GPU usage if applicable
+
+    :param verbose: (int) Verbosity level 0: not output 1: info
+    """
+
+    def __init__(self, verbose=1):
+        super(HardwareStatsCallback, self).__init__(verbose)
+        self.verbose = verbose
+
+        self.python_process = psutil.Process(os.getpid())
+
+    def _on_step(self) -> bool:
+        """
+        This method will be called by the model after each call to `env.step()`.
+
+        For child callback (of an `EventCallback`), this will be called
+        when the event is triggered.
+
+        :return: (bool) If the callback returns False, training is aborted early.
+        """
+
+        cpu_usage_percent = psutil.cpu_percent()
+        memory_usage_mb = self.python_process.memory_info().rss / 1024
+
+        if self.verbose == 1:
+            print(f'CPU Usage: {cpu_usage_percent} %')
+            print(f'Memory Usage: {memory_usage_mb} MB')
+
+        self.logger.record('hardware/cpu_usage_percent', cpu_usage_percent)
+        self.logger.record('hardware/memory_usage_mb', memory_usage_mb)
+
+        if torch.cuda.is_available():
+
+            gpu_memory_usage_mb = GPUtil.getGPUs()[0].memoryUsed
+            # gpu_memory_usage_percent = self.gpus[0].memoryUtil
+
+            if self.verbose == 1:
+                print(f'GPU Usage: {gpu_memory_usage_mb} MB')
+
+            self.logger.record('hardware/gpu_memory_usage_mb', gpu_memory_usage_mb)
+
+        return True
 
 
 class iGibsonRGBWrapper(gym.Wrapper):
@@ -118,6 +173,7 @@ class SB3Wrapper(gym.Env):
         self.action_space = action_space
 
     def step(self, action):
+
         obs, reward, done, info = self.env.step(action)
         done = bool(done)
         return obs, reward, done, info
