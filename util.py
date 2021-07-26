@@ -62,10 +62,10 @@ class RolloutTimeCallback(BaseCallback):
         """
         self.rollout_end_time = datetime.now()
 
-        rollout_time = self.rollout_end_time - self.rollout_start_time
+        rollout_time = (self.rollout_end_time - self.rollout_start_time).total_seconds()
 
         if self.verbose == 1:
-            print(f'Rollout time: {rollout_time}')
+            print(f'Rollout time: {rollout_time} seconds')
 
         self.logger.record('rollout_time_seconds', rollout_time)
 
