@@ -14,3 +14,5 @@ each of these combinations to be run with **5 popular RL algorithms**.
 
 ### where Task1 = `interactive_nav`
 ### and Task2 = `social_nav`
+
+A subset will be chosen for the final measurements.
