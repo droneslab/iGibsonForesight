@@ -39,7 +39,7 @@ class LocobotEnvironmentTrainer:
 
     def __init__(self, algorithm, environment_name='Rs_int', task='interactive_nav',
                  training_steps=100_000, save_freq=1_000,
-                 igibson_logging_level=logging.ERROR, rendering_mode='headless'):
+                 igibson_logging_level=logging.ERROR, rendering_mode='headless', callback_verbose=0):
 
         assert algorithm in ALGORITHMS, 'ERROR: Invalid algorithm.'
         assert environment_name in IGC2021_ENVS, 'ERROR: Invalid environment name.'
@@ -60,6 +60,8 @@ class LocobotEnvironmentTrainer:
         self.training_steps = training_steps
         self.save_freq = save_freq
 
+        self.callback_verbose = callback_verbose
+
         self.train(rendering_mode)
 
     def train(self, mode):
@@ -69,8 +71,8 @@ class LocobotEnvironmentTrainer:
         env = get_wrapped_env(self.config_filename, self.observation_space, self.action_space, mode=mode)
 
         ckpt_callback = CheckpointCallback(save_freq=self.save_freq, save_path='./models/', name_prefix=self.experiment_name)
-        rt_callback = RolloutTimeCallback(verbose=1)
-        hs_callback = HardwareStatsCallback(verbose=1)
+        rt_callback = RolloutTimeCallback(verbose=self.callback_verbose)
+        hs_callback = HardwareStatsCallback(verbose=self.callback_verbose)
 
         tb_log = f'./logs/{self.experiment_name}'
         if self.algorithm in [DDPG, TD3, SAC]:
