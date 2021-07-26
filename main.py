@@ -38,7 +38,7 @@ ALGORITHMS = (A2C, DDPG, PPO, SAC, TD3)  # Others are not valid due to Locobot's
 class LocobotEnvironmentTrainer:
 
     def __init__(self, algorithm, environment_name='Rs_int', task='interactive_nav',
-                 training_steps=100_000, save_freq=1_000,
+                 training_steps=100_000, save_freq=20_000,
                  igibson_logging_level=logging.ERROR, rendering_mode='headless', callback_verbose=0):
 
         assert algorithm in ALGORITHMS, 'ERROR: Invalid algorithm.'
