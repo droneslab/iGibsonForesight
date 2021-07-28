@@ -75,7 +75,7 @@ class LocobotEnvironmentTrainer:
 
         tb_log = f'./logs/{self.experiment_name}'
         if self.algorithm in [DDPG, TD3, SAC]:
-            model = self.algorithm('CnnPolicy', env, buffer_size=1_000_000, verbose=1, tensorboard_log=tb_log)
+            model = self.algorithm('CnnPolicy', env, buffer_size=500, verbose=1, tensorboard_log=tb_log)
         else:  # [A2C, PPO]
             model = self.algorithm('CnnPolicy', env, verbose=1, tensorboard_log=tb_log)
 
