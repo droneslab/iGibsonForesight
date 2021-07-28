@@ -39,7 +39,7 @@ class LocobotEnvironmentTrainer:
 
     def __init__(self, algorithm, environment_name='Rs_int', task='interactive_nav',
                  training_steps=100_000, save_freq=20_000,
-                 igibson_logging_level=logging.ERROR, rendering_mode='headless', callback_verbose=0):
+                 igibson_logging_level=logging.ERROR, rendering_mode='headless', callback_verbose=1):
 
         assert algorithm in ALGORITHMS, 'ERROR: Invalid algorithm.'
         assert environment_name in IGC2021_ENVS, 'ERROR: Invalid environment name.'
@@ -75,7 +75,7 @@ class LocobotEnvironmentTrainer:
 
         tb_log = f'./logs/{self.experiment_name}'
         if self.algorithm in [DDPG, TD3, SAC]:
-            model = self.algorithm('CnnPolicy', env, buffer_size=500, verbose=1, tensorboard_log=tb_log)
+            model = self.algorithm('CnnPolicy', env, buffer_size=1_000_000, verbose=1, tensorboard_log=tb_log)
         else:  # [A2C, PPO]
             model = self.algorithm('CnnPolicy', env, verbose=1, tensorboard_log=tb_log)
 
@@ -86,7 +86,8 @@ class LocobotEnvironmentTrainer:
 
 if __name__ == '__main__':
 
-    x = LocobotEnvironmentTrainer(algorithm=A2C,
+    x = LocobotEnvironmentTrainer(algorithm=DDPG,
                                   environment_name='Rs_int',
                                   task='social_nav',
-                                  rendering_mode='headless')
+                                  rendering_mode='headless',
+                                  callback_verbose=1)
