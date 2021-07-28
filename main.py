@@ -69,7 +69,7 @@ class LocobotEnvironmentTrainer:
 
         env = get_wrapped_env(self.config_filename, self.observation_space, self.action_space, mode=mode)
 
-        ckpt_callback = CheckpointCallback(save_freq=self.save_freq, save_path='./models/', name_prefix=self.experiment_name)
+        ckpt_callback = CheckpointCallback(save_freq=self.save_freq, save_path='./models/', name_prefix=f'{self.experiment_name}_{self.algorithm.__name__}')
         rt_callback = RolloutTimeCallback(verbose=self.callback_verbose)
         hs_callback = HardwareStatsCallback(verbose=0)
 
