@@ -53,7 +53,7 @@ class LocobotEnvironmentTrainer:
         self.action_space = spaces.Box(shape=(2,), low=-1.0, high=1.0, dtype=np.float32)
 
         self.config_filename = os.path.join(EVAL_CONFIG_FOLDER, f'{self._robot_name}_{task}_{environment_name}.yaml')
-        self.experiment_name = f'{self._robot_name}_{task}_{environment_name}'  # tensorboard logdir
+        self.experiment_name = f'{self._robot_name}_{task}_{environment_name}_{algorithm.__name__}'  # tensorboard logdir
 
         self.algorithm = algorithm
         self.training_steps = training_steps
@@ -71,7 +71,7 @@ class LocobotEnvironmentTrainer:
 
         ckpt_callback = CheckpointCallback(save_freq=self.save_freq, save_path='./models/', name_prefix=self.experiment_name)
         rt_callback = RolloutTimeCallback(verbose=self.callback_verbose)
-        hs_callback = HardwareStatsCallback(verbose=self.callback_verbose)
+        hs_callback = HardwareStatsCallback(verbose=0)
 
         tb_log = f'./logs/{self.experiment_name}'
         if self.algorithm in [DDPG, TD3, SAC]:
