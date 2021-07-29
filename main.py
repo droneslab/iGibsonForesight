@@ -86,7 +86,7 @@ class LocobotEnvironmentTrainer:
 
 if __name__ == '__main__':
 
-    x = LocobotEnvironmentTrainer(algorithm=DDPG,
+    x = LocobotEnvironmentTrainer(algorithm=PPO,
                                   environment_name='Rs_int',
                                   task='social_nav',
                                   rendering_mode='headless',
