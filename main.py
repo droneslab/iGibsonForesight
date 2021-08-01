@@ -86,8 +86,8 @@ class LocobotEnvironmentTrainer:
 
 if __name__ == '__main__':
 
-    x = LocobotEnvironmentTrainer(algorithm=PPO,
-                                  environment_name='Wainscott_1_int',
+    x = LocobotEnvironmentTrainer(algorithm=A2C,
+                                  environment_name='Beechwood_1_int',
                                   task='social_nav',
                                   rendering_mode='headless',
                                   callback_verbose=1)
