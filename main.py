@@ -87,7 +87,7 @@ class LocobotEnvironmentTrainer:
 if __name__ == '__main__':
 
     x = LocobotEnvironmentTrainer(algorithm=DDPG,
-                                  environment_name='Beechwood_1_int',
+                                  environment_name='Wainscott_1_int',
                                   task='social_nav',
                                   rendering_mode='headless',
                                   callback_verbose=1)
