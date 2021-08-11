@@ -8,6 +8,7 @@ Reward functions and action spaces are specified by or according to iGibson.
 """
 
 import os
+import argparse
 import logging
 import numpy as np
 from gym import spaces
@@ -75,9 +76,9 @@ class LocobotEnvironmentTrainer:
 
         tb_log = f'./logs/{self.experiment_name}'
         if self.algorithm in [DDPG, TD3, SAC]:
-            model = self.algorithm('CnnPolicy', env, buffer_size=500, verbose=1, tensorboard_log=tb_log)
+            model = self.algorithm('CnnPolicy', env, buffer_size=500, verbose=0, tensorboard_log=tb_log)
         else:  # [A2C, PPO]
-            model = self.algorithm('CnnPolicy', env, verbose=1, tensorboard_log=tb_log)
+            model = self.algorithm('CnnPolicy', env, verbose=0, tensorboard_log=tb_log)
 
         model.learn(total_timesteps=self.training_steps, callback=[ckpt_callback, rt_callback, hs_callback])
 
@@ -86,8 +87,20 @@ class LocobotEnvironmentTrainer:
 
 if __name__ == '__main__':
 
-    x = LocobotEnvironmentTrainer(algorithm=DDPG,
-                                  environment_name='Wainscott_1_int',
+    parser = argparse.ArgumentParser(description='iGibson Foresight training script (social_nav task only).')
+    parser.add_argument('-a', '--algo', type=str, required=True, help='DDPG, PPO or A2C')
+    parser.add_argument('-e', '--env', type=str, required=True, help='Rs_int, Beechwood_1_int, or Wainscott_1_int')
+    args = parser.parse_args()
+
+    if args.algo == 'DDPG':
+        algo = DDPG
+    if args.algo == 'PPO':
+        algo = PPO
+    if args.algo == 'A2C':
+        algo = A2C
+
+    x = LocobotEnvironmentTrainer(algorithm=algo,
+                                  environment_name=args.env,
                                   task='social_nav',
                                   rendering_mode='headless',
                                   callback_verbose=1)
