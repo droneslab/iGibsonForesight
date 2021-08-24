@@ -52,7 +52,7 @@ initial_pos_z_offset: 0.1
 collision_ignore_link_a_ids: [1, 2, 3, 4]  # ignore collisions with these robot links
 
 # sensor spec
-output: [task_obs, rgb, depth]
+output: [rgb]
 # image
 # Intel Realsense Depth Camera D435
 # https://store.intelrealsense.com/buy-intel-realsense-depth-camera-d435.html

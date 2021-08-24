@@ -1,7 +1,7 @@
 #!/bin/bash
 
 source ~/miniconda3/etc/profile.d/conda.sh
-conda activate igc2021
+conda activate igibson
 
 algos=("DDPG" "PPO" "A2C")
 envs=("Rs_int" "Beechwood_1_int" "Wainscott_1_int")

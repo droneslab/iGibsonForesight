@@ -1,5 +1,6 @@
 import os
 import sys
+import logging
 import psutil
 from datetime import datetime
 import GPUtil
@@ -8,9 +9,8 @@ import torch
 from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.callbacks import BaseCallback
 
-from gibson2.envs.igibson_env import iGibsonEnv
-from gibson2.render.profiler import Profiler
-import logging
+from igibson.envs.igibson_env import iGibsonEnv
+from igibson.render.profiler import Profiler
 
 
 class RolloutTimeCallback(BaseCallback):
