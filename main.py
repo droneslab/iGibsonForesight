@@ -87,7 +87,6 @@ class LocobotEnvironmentTrainer:
 
 if __name__ == '__main__':
 
-    '''
     parser = argparse.ArgumentParser(description='iGibson Foresight training script (social_nav task only).')
     parser.add_argument('-a', '--algo', type=str, required=True, help='DDPG, PPO or A2C')
     parser.add_argument('-e', '--env', type=str, required=True, help='Rs_int, Beechwood_1_int, or Wainscott_1_int')
@@ -104,11 +103,4 @@ if __name__ == '__main__':
                                   environment_name=args.env,
                                   task='social_nav',
                                   rendering_mode='gui',
-                                  callback_verbose=1)
-    '''
-
-    x = LocobotEnvironmentTrainer(algorithm=A2C,
-                                  environment_name='Rs_int',
-                                  task='interactive_nav',
-                                  rendering_mode='headless',
                                   callback_verbose=1)

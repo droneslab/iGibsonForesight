@@ -1,4 +1,5 @@
 /models
+/igibson/data/*
 
 *.xml
 .idea
