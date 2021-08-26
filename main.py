@@ -10,6 +10,7 @@ Reward functions and action spaces are specified by or according to iGibson.
 import os
 import argparse
 import logging
+from datetime import datetime
 import numpy as np
 from gym import spaces
 from stable_baselines3 import A2C, DDPG, PPO, SAC, TD3
@@ -50,11 +51,13 @@ class LocobotEnvironmentTrainer:
 
         self._robot_name = 'locobot'
 
+        self.start_time = datetime.now().strftime('%m.%d.%Y-%H.%M.%S')
+
         self.observation_space = spaces.Box(low=0, high=255, shape=(180, 320, 3), dtype=np.uint8)
         self.action_space = spaces.Box(shape=(2,), low=-1.0, high=1.0, dtype=np.float32)
 
         self.config_filename = os.path.join(EVAL_CONFIG_FOLDER, f'{self._robot_name}_{task}_{environment_name}.yaml')
-        self.experiment_name = f'{self._robot_name}_{task}_{environment_name}'  # tensorboard logdir
+        self.experiment_name = f'{self._robot_name}_{task}_{environment_name}_{self.start_time}'  # tensorboard logdir
 
         self.algorithm = algorithm
         self.training_steps = training_steps
