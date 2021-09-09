@@ -145,14 +145,15 @@ class iGibsonRGBWrapper(gym.Wrapper):
         next_state, reward, done, info = self.env.step(action)
 
         next_state = next_state[self.mode]
-
-        return next_state.copy(), reward, done, info
+        next_state = next_state.cpu().numpy().copy() if torch.is_tensor(next_state) else next_state.copy()
+        return next_state, reward, done, info
 
     def reset(self):
         state = self.env.reset()
 
         state = state[self.mode]
-        return state.copy()
+        state = state.cpu().numpy().copy() if torch.is_tensor(state) else state.copy()
+        return state
 
 
 class SB3Wrapper(gym.Env):
@@ -194,7 +195,7 @@ def get_wrapped_env(config_filename, observation_space, action_space, mode='head
 
     assert mode in ['gui', 'headless', 'iggui', 'pbgui'], 'Invalid mode selected.'
 
-    env = iGibsonEnv(config_filename, mode=mode)
+    env = iGibsonEnv(config_filename, mode=mode, render_to_tensor=True)
     env = iGibsonRGBWrapper(env)
     env = SB3Wrapper(env, observation_space, action_space)
     env = Monitor(env)

@@ -12,6 +12,7 @@ import argparse
 import logging
 from datetime import datetime
 import numpy as np
+import torch
 from gym import spaces
 from stable_baselines3 import A2C, DDPG, PPO, SAC, TD3
 from stable_baselines3.common.callbacks import CheckpointCallback
@@ -65,6 +66,8 @@ class LocobotEnvironmentTrainer:
 
         self.callback_verbose = callback_verbose
 
+        self.device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+
         self.train(rendering_mode)
 
     def train(self, mode):
@@ -79,17 +82,16 @@ class LocobotEnvironmentTrainer:
 
         tb_log = f'./logs/{self.experiment_name}'
         if self.algorithm in [DDPG, TD3, SAC]:
-            model = self.algorithm('CnnPolicy', env, buffer_size=500, verbose=0, tensorboard_log=tb_log)
+            model = self.algorithm('CnnPolicy', env, buffer_size=500, verbose=0, tensorboard_log=tb_log, device=self.device)
         else:  # [A2C, PPO]
-            model = self.algorithm('CnnPolicy', env, verbose=0, tensorboard_log=tb_log)
+            model = self.algorithm('CnnPolicy', env, verbose=0, tensorboard_log=tb_log, device=self.device)
 
         model.learn(total_timesteps=self.training_steps, callback=[ckpt_callback, rt_callback, hs_callback])
 
         env.close()
 
 
-if __name__ == '__main__':
-
+def command_line():
     parser = argparse.ArgumentParser(description='iGibson Foresight training script (social_nav task only).')
     parser.add_argument('-a', '--algo', type=str, required=True, help='DDPG, PPO or A2C')
     parser.add_argument('-e', '--env', type=str, required=True, help='Rs_int, Beechwood_1_int, or Wainscott_1_int')
@@ -103,7 +105,22 @@ if __name__ == '__main__':
         algo = A2C
 
     x = LocobotEnvironmentTrainer(algorithm=algo,
-                                  environment_name=args.env,
-                                  task='social_nav',
+                                  ernvironment_name=args.env,
+                                  task='interactive_nav',
                                   rendering_mode='gui',
                                   callback_verbose=1)
+
+
+def debug():
+    algo = PPO
+    env = 'Benevolence_0_int'
+    x = LocobotEnvironmentTrainer(algorithm=algo,
+                                  environment_name=env,
+                                  task='interactive_nav',
+                                  rendering_mode='gui',
+                                  callback_verbose=1)
+
+
+if __name__ == '__main__':
+    debug()
+
