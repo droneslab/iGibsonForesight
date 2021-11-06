@@ -1,0 +1,38 @@
+#!/bin/bash
+#SBATCH --partition=hal
+#SBATCH --qos=hal
+#SBATCH --account=kdantu
+#SBATCH --clusters=faculty
+#SBATCH --time=36:00:00
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --mem=8000
+#SBATCH --job-name="foresight-vanilla-run"
+#SBATCH --output=vanilla-run.out
+#SBATCH --mail-user=kexinche@buffalo.edu
+#SBATCH --mail-type=ALL
+
+echo "Working directory = "$SLURM_SUBMIT_DIR
+
+ulimit -s unlimited
+
+echo 
+echo "Path to venv activate given: "$1
+
+echo 
+echo "Trying to source venv..."
+source $1
+which python
+
+echo 
+echo "Trying to cd into iGibsonForesight from CCR folder..."
+cd ../..
+echo "Folder should be foresight-igibson now: "
+pwd
+
+echo 
+echo "Trying to run main.py"
+python iGibsonForesight/main.py -a DDPG -e Rs_int
+
+echo 
+echo "All Done!"

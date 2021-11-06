@@ -1,0 +1,20 @@
+Working directory = /user/kexinche/Research/Foresight/foresight-igibson/iGibsonForesight/CCR
+
+Path to venv activate given: /user/kexinche/Research/Foresight/venvs/py38-anaconda-2021.05/bin/activate
+
+Trying to source venv...
+/user/kexinche/Research/Foresight/venvs/py38-anaconda-2021.05/bin/python
+
+Trying to cd into iGibsonForesight from CCR folder...
+Folder should be foresight-igibson now: 
+/user/kexinche/Research/Foresight/foresight-igibson
+
+Trying to run main.py
+Traceback (most recent call last):
+  File "iGibsonForesight/main.py", line 19, in <module>
+    from util import get_wrapped_env, RolloutTimeCallback, HardwareStatsCallback
+  File "/user/kexinche/Research/Foresight/foresight-igibson/iGibsonForesight/util.py", line 12, in <module>
+    from igibson.envs.igibson_env import iGibsonEnv
+ModuleNotFoundError: No module named 'igibson'
+
+All Done!
